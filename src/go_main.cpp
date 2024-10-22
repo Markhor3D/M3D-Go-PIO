@@ -21,7 +21,7 @@ bool FindDevicesOnWire(){
   }
   return true; // oled is here
 }
-void setup()
+void go_setup()
 {
   Serial.begin(115200);
   Serial.println("Begin");
@@ -67,7 +67,7 @@ void setup()
   // WebSocketsSetup();
   // NetworkSetup();
 }
-void loop()
+void go_loop()
 {
   DisplayLoop();
   BLELoop();

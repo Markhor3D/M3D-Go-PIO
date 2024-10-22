@@ -1,0 +1,37 @@
+{
+  "name": "M3D-Go-PIO",
+  "version": "1.0.0",
+  "description": "Library to program the M3D Go surface robot autonomously without Scratch.",
+  "keywords": ["M3D Go", "robot", "autonomous", "ESP32", "modular", "servo", "BLE", "sensor"],
+  "authors": [
+    {
+      "name": "M3D",
+      "email": "info@markhor3d.com",
+      "url": "https://www.markhor3d.com"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Markhor3D/M3D-Go-PIO"
+  },
+  "license": "MIT",
+  "frameworks": ["arduino"],
+  "platforms": ["espressif32"],
+  "dependencies": {
+    "bblanchon/ArduinoJson": "^6.16.1",
+    "me-no-dev/AsyncTCP": "*",
+    "me-no-dev/ESPAsyncWebServer": "https://github.com/me-no-dev/ESPAsyncWebServer.git#1.2.3",
+    "umartechboy/ESPThreads": "https://github.com/umartechboy/ESPThreads.git#1.0.0",
+    "jkb-git/ESP32Servo": "https://github.com/jkb-git/ESP32Servo/archive/master.zip",
+    "adafruit/Adafruit_SSD1306": "^2.4.0",
+    "adafruit/Adafruit_VL53L0X": "^1.2.2",
+    "arduino-libraries/ArduinoBLE": "^1.3.6"
+  },
+  "export": {
+    "include": [
+      "src/*",
+      "include/*"
+    ]
+  },
+  "examples": "examples/*"
+}

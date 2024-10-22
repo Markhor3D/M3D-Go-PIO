@@ -1,0 +1,3 @@
+
+void NetworkSetup();
+void NetworkLoop();

@@ -37,6 +37,14 @@ public:
     // A negative percentage will put the respective motor in opposite direction
     // If a second paramter is defined, the bot will take the specified number of seconds to accelerate/decelerate
     void reverse(int percentage = 100, float accelerateInSeconds = 0);
+    // Spins the bot by the specisfied angle in the clockwise direction (Default = 90);
+    // A negative value will put the bot in opposite direction
+    // This functions requires a calibrated bot
+    void spinAngle(int angle = 90);
+    // travels the bot in a straight line for the specified distnace in cm.
+    // A negative value will put the bot in opposite direction
+    // This functions requires a calibrated bot
+    void travel_cm(int distance = 90);
     // Puts the bot in Clockwise spin with the specified power in percentage. (Default = 100);
     // A negative percentage will put the respective motors in opposite direction
     // If a second paramter is defined, the bot will take the specified number of seconds to accelerate/decelerate
@@ -63,6 +71,10 @@ public:
     int getLeftMotor();    
     // Gets the current power set for the right side motor
     int getRightMotor();    
+    // Runs the calibration procedure that uses user feedback and saves the calibration data
+    bool calibrate();    
+    // Runs the calibration procedure that uses a calibration mat and saves the calibration data
+    bool autoCalibrate();    
 
     void ScratchLoop();
     ~M3DGo();

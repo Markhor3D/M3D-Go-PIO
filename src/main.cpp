@@ -2,19 +2,14 @@
 
 void setup(){
     go.begin();
+    go.calibrate();
+
+    go.travel_cm(100);
+    go.spinAngle(180);
+    go.travel_cm(100);
+    go.spinAngle(180);
 }
 
 void loop(){
 
-    remote.waitForButton("Should I begin?", "Begin!");
-    go.spinClockwise(50);
-    while(line.touching()) // already on the line, make sure it is off the line
-        delay(1);
-
-    while(line.notOnLine())
-    {
-        remote.indication1.polarPlot("Distance", range.get_cm());
-        delay(50);
-    }
-    go.stop();
 }

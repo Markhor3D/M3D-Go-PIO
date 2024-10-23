@@ -1,8 +1,5 @@
 #include <Arduino.h>
-#include <LittleFS.h>
 #include "Common.h"
-#include "Network.h"
-#include "WebSocketService.h"
 #include "ScratchServer.h"
 #include "Mechanical.h"
 #include "Display.h"
@@ -24,14 +21,7 @@ bool FindDevicesOnWire(){
 void go_setup()
 {
   Serial.begin(115200);
-  Serial.println("Begin");
-
-  if (!LittleFS.begin())
-  {
-    Serial.println("Formating LittleFS");
-    LittleFS.format();
-  }
-
+  Serial.println("Go Begin");  
   Wire.begin(); // default pins
   if (!FindDevicesOnWire()){    
     Serial.print("No devices");

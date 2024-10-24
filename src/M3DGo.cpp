@@ -35,7 +35,8 @@ void M3DGo::delay(long ms){
     long st = millis();
     while(millis() - st < ms){
         BLELoop();
-            notification_led_loop(notLED);
+        notification_led_loop(notLED);
+        range_finder_loop();
     }
 }
 void M3DGo::ScratchLoop(){    
@@ -364,10 +365,63 @@ Hinge::~Hinge()
 
 Display::Display(/* args */)
 {
+    raw = &oled;
 }
 
 Display::~Display()
 {
+}
+
+// Check if the display is connected and ready.
+bool Display::attached(){
+    if (!weHaveOled)
+        weHaveOled = oled.begin();
+    return weHaveOled;
+}
+
+// Display text on the screen.
+// Example usage:
+//   display.text("Hello, world!");
+void Display::text(String str){
+    ShowMessage(str);
+}
+
+// Display a floating-point value on the screen.
+void Display::text(float value){
+    String str = String(value);
+    ShowMessage(str);
+}
+
+// Display text and a numeric value on the screen.
+void Display::text(String str, float value){
+    str = str + ": " + String(value);
+    ShowMessage(str);
+}
+
+// Display two strings on the screen.
+void Display::text(String str, String value){
+    str = str + ": " + value;
+    ShowMessage(str);
+}
+
+// Display an emoji on the screen using an enum value.
+void Display::emoji(Emojis emoji){
+    String str = "stuck";
+    if (emoji == Emojis::Confused) str = "confused"; else 
+    if (emoji == Emojis::Frustrated) str = "frustrated"; else 
+    if (emoji == Emojis::Funny) str = "funny"; else 
+    if (emoji == Emojis::Joy) str = "joy"; else 
+    if (emoji == Emojis::Laugh) str = "laugh"; else 
+    if (emoji == Emojis::Like) str = "like"; else 
+    if (emoji == Emojis::Love) str = "love"; else 
+    if (emoji == Emojis::Smile) str = "smile"; else 
+    if (emoji == Emojis::Wink) str = "wink";
+    SetExpression(str);
+}
+
+// Display an emoji on the screen using the emoji name.
+void Display::emoji(String emojiName){
+    SetExpression(emojiName);
 }
 
 // Range Finder
@@ -381,15 +435,127 @@ RangeFinder::~RangeFinder()
 {
 }
 
+// Get the distance in millimeters.
+float RangeFinder::get_mm(){
+    if(!attached())
+        return 0;
+    return range_finder_loop();
+}
+
+// Get the distance in meters.
+float RangeFinder::get_m(){
+    return get_mm() / 1000.0F;
+}
+
+// Get the distance in centimeters.
+float RangeFinder::get_cm(){
+
+    return get_mm() / 100.0F;
+}
+
+// Get the distance in inches.
+float RangeFinder::get_inches(){
+    return get_mm() / 25.4F;
+}
+
+// Get the distance in feet.
+float RangeFinder::get_ft(){
+
+    return get_inches() / 12.0F;
+}
+
+// Check if the rangefinder sensor is connected.
+bool RangeFinder::attached(){
+    if (!weHaveVLX)
+        weHaveVLX = lox.begin();
+    return weHaveVLX;
+}
+
+// Check if the rangefinder sensor is out of range
+bool RangeFinder::isOutOfRange(){
+    if (!attached())
+        return true;
+    if (range_finder_loop() >= 1200)
+        return true;
+    return false;
+}
 // Line Sensor
 
 LineSensor::LineSensor()
 {
+    threshold = DefaultProximityThreshold;
 }
 
 LineSensor::~LineSensor()
 {
 }
+
+// Set the threshold value for detecting a line.
+void LineSensor::setThreshold(int value){
+    threshold = value;
+}
+
+// Get the current threshold value for the line sensor.
+int LineSensor::getThreshold(){    
+    return threshold;
+}
+
+// Teach that the background is lighter than the line
+void LineSensor::setBackgroundIsLighter(){
+    invertLogic = false;
+}
+
+// Teach that the background is darker than the line
+void LineSensor::setBackgroundIsDarker(){
+    invertLogic = true;
+}
+// Teach that the background is lighter than the line
+bool LineSensor::getBackgroundIsLighter(){
+    return invertLogic == false;
+}
+
+// Teach that the background is darker than the line
+bool LineSensor::getBackgroundIsDarker(){
+    return invertLogic == true;
+}
+
+#define readRangePinRaw(x) ((int)((float)analogRead(x) / 40.95F))
+#define readRangePin(x) (invertLogic?(100 - readRangePinRaw(x)): (readRangePinRaw(x)))
+// Get the value from the left side of the sensor (relative to the sensor itself).
+int LineSensor::getLeft(){
+    return readRangePin(ProximityAPin);
+}
+
+// Get the value from the right side of the sensor (relative to the sensor itself).
+int LineSensor::getRight(){
+    return readRangePin(ProximityBPin);
+}
+
+// Check if any part of the sensor is touching the line.
+bool LineSensor::touching(){
+    return leftOfLine() || rightOfLine() || onTheLine();
+}
+
+// Check if the bot is on the line.
+bool LineSensor::onTheLine(){
+    return getLeft() > threshold && getRight() > threshold;
+}
+
+// Check if the bot is to the left of the line.
+bool LineSensor::leftOfLine(){
+    return getLeft() < threshold && getRight() > threshold;
+}
+
+// Check if the bot is to the right of the line.
+bool LineSensor::rightOfLine(){
+    return getLeft() > threshold && getRight() < threshold;
+}
+
+// Check if the bot is not on the line.
+bool LineSensor::notOnLine(){
+    return !onTheLine();
+}
+
 
 // BLERemote
 Remote::Remote(){

@@ -302,6 +302,9 @@ public:
 // The left and right are relative to the sensor, not the bot itself.
 class LineSensor
 {
+    private:
+    int threshold;
+    bool invertLogic = false;
 public:
     LineSensor(/* args */);
     ~LineSensor();
@@ -310,6 +313,26 @@ public:
     // Example usage:
     //   line.setThreshold();
     void setThreshold(int value);
+
+    // Teach that the background is lighter than the line
+    // Example usage:
+    //   lin.setBackGroundIsLight();
+    void setBackgroundIsLighter();
+
+    // Teach that the background is darker than the line
+    // Example usage:
+    //   line.backGroundIsLight();
+    void setBackgroundIsDarker();
+
+    // Determines if the background is lighter than the line
+    // Example usage:
+    //   if(line.getBackGroundIsLight()){ // ... }
+    bool getBackgroundIsLighter();
+
+    // Determines if the background is darker than the line
+    // Example usage:
+    //   if(line.getBackGroundIsDarker()){ // ... }
+    bool getBackgroundIsDarker();
 
     // Get the current threshold value for the line sensor.
     // Example usage:

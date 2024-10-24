@@ -2,13 +2,14 @@
 
 #define GoVersion 2
 
-#define Servo1Pin               23
-#define Servo2Pin               19
-#define ProximityAPin           34
-#define ProximityBPin           35
-#define DefaultTravelSpeed_mps  0.120
-#define WheelSpan               0.082
-#define CalibTrackLength        0.100
+#define Servo1Pin                   23
+#define Servo2Pin                   19
+#define ProximityAPin               34
+#define ProximityBPin               35
+#define DefaultTravelSpeed_mps      0.120
+#define WheelSpan                   0.082
+#define CalibTrackLength            0.100
+#define DefaultProximityThreshold   50
 
 #if GoVersion == 1
 #define LeftMotorEnPin      14

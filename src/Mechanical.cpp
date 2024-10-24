@@ -114,10 +114,14 @@ void MechanicalLoop()
     }
     lastServo2Set = millis();
   }
+  Sensor_ProximityA = (int)((float)analogRead(ProximityAPin) / 40.95F);
+  Sensor_ProximityB = (int)((float)analogRead(ProximityBPin) / 40.95F);
+  range_finder_loop();
+}
+
+float range_finder_loop(){
   if (millis() - lastSensorsRead > 10)
   {
-    Sensor_ProximityA = (int)((float)analogRead(ProximityAPin) / 40.95F);
-    Sensor_ProximityB = (int)((float)analogRead(ProximityBPin) / 40.95F);
     // Serial.print("S0 = ");
     // Serial.print(Sensors[0]);
     // Serial.print(", S1 = ");
@@ -145,8 +149,8 @@ void MechanicalLoop()
 
     lastSensorsRead = millis();
   }
+  return Sensor_Distance;
 }
-
 void SetL298Motor(L298N &motor, float factor)
 {
   motor.setSpeed(abs(factor) * 255);

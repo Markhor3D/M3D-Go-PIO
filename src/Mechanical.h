@@ -1,4 +1,9 @@
 #pragma once
+
+#include <Adafruit_VL53L0X.h>
+extern Adafruit_VL53L0X lox;
+extern bool weHaveVLX;
+float range_finder_loop();
 void MechanicalSetup();
 void MechanicalLoop();
 

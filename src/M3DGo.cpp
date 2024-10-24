@@ -191,27 +191,27 @@ String Remote::waitForButton(String question, String buttonA, String buttonB, St
 String Remote::waitForButton(String question, String buttonA, String buttonB, String buttonC, String buttonD, String buttonE){
     
 }
-// Notification
+// Indication
 
-Notification::Notification(int _index)
+Indication::Indication(int _index)
 {
     index=  _index;
 }
 
-Notification::~Notification()
+Indication::~Indication()
 {
 }
-void Notification::hide(){
+void Indication::hide(){
 }
-void Notification::show(String notification){
+void Indication::show(String notification){
 
 }
 // Notify with the given notification and the value
-void Notification::show(String notification, float value){
+void Indication::show(String notification, float value){
 
 }
 // Notify with the given notification and the value
-void Notification::show(String notification, String value){
+void Indication::show(String notification, String value){
     
 }
 

@@ -23,7 +23,8 @@ private:
     int notLED = 0;  // Stores the brightness of the notification LED
     int leftMotorPower = 0;  // Stores the current power of the left motor
     int rightMotorPower = 0; // Stores the current power of the right motor
-
+    float maxTravelSpeed = 0; // to be restored from prefs
+    float maxSpinSpeed = 0; // to be restored from prefs
 public:
     // Constructor for M3DGo
     M3DGo(/* args */);
@@ -34,10 +35,23 @@ public:
     //   go.begin();
     void begin();
 
+    // Delays the execution of the code be the specified seconds while respecting the background tasks of M3D Go
+    // Example usage:
+    //   go.delay(500); // Halts the execution for half a second
+    void delay_s(float seconds);
+    // Delays the execution of the code be the specified milliseconds while respecting the background tasks of M3D Go
+    // Example usage:
+    //   go.delay(0.5); // Halts the execution for half a second
+    void delay(long ms);
     // Set the brightness of the notification LED [0-100%]
     // Example usage:
     //   go.setNotificationLED(50);  // Set LED brightness to 50%
     void setNotificationLED(int percentage);
+
+    // Puts the LED in a blinking routine.
+    // Example usage:
+    //   go.blinkNotificationLED(1000);  // LED will start blinking once every second
+    void blinkNotificationLED(int period_ms);
 
     // Get the current brightness of the notification LED [0-100%]
     // Example usage:
@@ -117,11 +131,30 @@ public:
 
     // Automatically calibrate the bot using a calibration mat. Returns true if successful.
     // Example usage:
-    //   bool success = go.autoCalibrate();
-    bool autoCalibrate();
+    //   bool success = go.autoCalibrateWithLineSensor();
+    bool autoCalibrateWithLineSensor();
+
+    // Automatically calibrate the bot using a wall and the distance sensor. Returns true if successful.
+    // Example usage:
+    //   bool success = go.autoCalibrateWithDistanceSensor();
+    bool autoCalibrateWithDistanceSensor();
+
 
     // Function used for the Scratch environment loop.
     void ScratchLoop();
+    
+    // Get spin speed in rad/sec
+    float getMaxSpinSpeed();
+
+    // Set spin speed in rad/sec
+    void setMaxSpinSpeed(float speed);
+    
+    // Get travel speed in m/sec
+    float getMaxTravelSpeed();
+
+    // Set travel speed in m/sec
+    void setMaxTravelSpeed(float speed);
+
 
     // Destructor for M3DGo.
     ~M3DGo();
@@ -258,6 +291,11 @@ public:
     // Example usage:
     //   if (range.attached()) { ... }
     bool attached();
+
+    // Check if the rangefinder sensor is out of range
+    // Example usage:
+    //   if (range.isOutOfRange()) { ... }
+    bool isOutOfRange();
 };
 
 // Class representing the IR-based line sensor.
@@ -271,22 +309,22 @@ public:
     // Set the threshold value for detecting a line.
     // Example usage:
     //   line.setThreshold();
-    void setThreshold();
+    void setThreshold(int value);
 
     // Get the current threshold value for the line sensor.
     // Example usage:
     //   line.getThreshold();
-    void getThreshold();
+    int getThreshold();
 
     // Get the value from the left side of the sensor (relative to the sensor itself).
     // Example usage:
     //   line.getLeft();
-    void getLeft();
+    int getLeft();
 
     // Get the value from the right side of the sensor (relative to the sensor itself).
     // Example usage:
     //   line.getRight();
-    void getRight();
+    int getRight();
 
     // Check if any part of the sensor is touching the line.
     // Example usage:
@@ -314,6 +352,13 @@ public:
     bool notOnLine();
 };
 
+// Possible values for a notification type
+enum NotificationType{
+    Normal = 0,     
+    Exclamation,     
+    Warning,
+    Error, 
+};
 // Renamed class representing indications on the Web BLE client.
 class Indication
 {
@@ -399,6 +444,12 @@ public:
     // Example usage:
     //   String name = remote.askString("Enter robot name:");
     String askString(String question);
+
+    // Shows a message on the screen
+    // Example usage:
+    //   remote.askString("M3D Go rocks!");
+    bool notify(String message, NotificationType type = NotificationType::Normal);
+
 
     // Create multiple Indication objects for the remote client.
     Indication indication1 = Indication(0);

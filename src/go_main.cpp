@@ -4,6 +4,8 @@
 #include "Mechanical.h"
 #include "Display.h"
 #include "bluetooth.h"
+#include "pinout.h"
+#include "go_main.h"
 
 CommunicationType CurrentCommunicationChannel = CommunicationType::NotConnected;
 bool FindDevicesOnWire(){
@@ -21,7 +23,8 @@ bool FindDevicesOnWire(){
 void go_setup()
 {
   Serial.begin(115200);
-  Serial.println("Go Begin");  
+  Serial.println("Begin");
+
   Wire.begin(); // default pins
   if (!FindDevicesOnWire()){    
     Serial.print("No devices");
@@ -54,11 +57,45 @@ void go_setup()
     oled.print(BLEName);
     oled.display();
   }
+  ledcAttachPin(StatusLEDPin, 1);
+  ledcChangeFrequency(1, 1000, 8);
   // WebSocketsSetup();
   // NetworkSetup();
 }
-void go_loop()
+
+bool lastLED = 0;
+// the loop function runs over and over again until power down or reset
+void StatusLEDBlinker(long period)
 {
+  if (millis() - lastLED < 10)
+    return;
+  lastLED = millis();
+  int v = 255 - abs((((long)millis() % period) * 510) / period - 255); // 0 > 255 > 0
+  //analogWrite(18, v);
+  ledcWrite(1, v);
+}
+void notification_led_loop(int period){    
+  if (period == 0) // scratch mode
+  {
+    if (CurrentCommunicationChannel == CommunicationType::BluetoothLE)
+      StatusLEDBlinker(300);
+    else
+      StatusLEDBlinker(1500);
+  }
+  else if (period > 0){
+      StatusLEDBlinker(period);
+  }
+  else { // -ive is duty cycle
+    ledcWrite(1, -period);
+  }
+}
+void go_loop(){
+  // Serial.print(analogRead(BatteryLevelPin));
+  // Serial.print(", ");
+  // Serial.print(analogRead(BatteryLevelPin)  * (7.83 / 4.13F) /* Calib */ / 1023.0F /* analog read res */ * (10.0F / (2.2F + 10.0F)) /* Pot ratio*/ * 3.3F /* Vref */);
+  // Serial.println("V");
+  // delay(100);
+  notification_led_loop();
   DisplayLoop();
   BLELoop();
   MechanicalLoop();

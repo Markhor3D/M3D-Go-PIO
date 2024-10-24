@@ -5,27 +5,39 @@
 #include <ESP32_Servo.h>
 #include <Wire.h>
 #include <Adafruit_VL53L0X.h>
+#include "Pinout.h"
 
 Adafruit_VL53L0X lox = Adafruit_VL53L0X();
 
 Servo servo1;
 Servo servo2;
 
-L298N leftMotor = L298N(14, 12, 13); // 12,13 // eN, P1, P2
-L298N rightMotor = L298N(15, 2, 4);  // 2,4
+L298N leftMotor = L298N(LeftMotorEnPin, LeftMotorP1Pin, LeftMotorP2Pin); // 12,13 // eN, P1, P2
+L298N rightMotor = L298N(RightMotorEnPin, RightMotorP1Pin, RightMotorP2Pin);  // 2,4
 float Sensor_Distance = 0;
 float Sensor_ProximityA = 0;
 float Sensor_ProximityB = 0;
+void WriteServoAAngle(int angle);
+void WriteServoBAngle(int angle);
+void SetServoAQuick(int angle);
+void SetServoBQuick(int angle);
 
 // HCSR04 US(33, 32);
 
 bool weHaveVLX = false;
 void MechanicalSetup()
 {
-  pinMode(34, INPUT);
-  pinMode(35, INPUT);
-  servo1.attach(23);
-  servo2.attach(19);
+  pinMode(ProximityAPin, INPUT);
+  pinMode(ProximityBPin, INPUT);
+  servo1.attach(Servo1Pin);
+  servo2.attach(Servo2Pin);
+  #if GoVersion == 1
+  SetServoAQuick(0);
+  SetServoBQuick(0);
+  #else
+  SetServoAQuick(90);
+  SetServoBQuick(90);
+  #endif
 
   Wire.begin();
   Wire.beginTransmission(41);
@@ -76,13 +88,13 @@ void MechanicalLoop()
     {
       servo1Current--;
       Serial.printf("servo 1 write: %d\n", servo1Current);
-      servo1.write(servo1Current * 2);
+      WriteServoAAngle(servo1Current);
     }
     else if (servo1Current < servo1Target)
     {
       servo1Current++;
       Serial.printf("servo 1 write: %d\n", servo1Current);
-      servo1.write(servo1Current * 2);
+      WriteServoAAngle(servo1Current);
     }
     lastServo1Set = millis();
   }
@@ -92,20 +104,20 @@ void MechanicalLoop()
     {
       servo2Current--;
       Serial.printf("servo 2 write: %d\n", servo2Current);
-      servo2.write(servo2Current * 2);
+      WriteServoBAngle(servo2Current);
     }
     else if (servo2Current < servo2Target)
     {
       servo2Current++;
       Serial.printf("servo 2 write: %d\n", servo2Current);
-      servo2.write(servo2Current * 2);
+      WriteServoBAngle(servo2Current);
     }
     lastServo2Set = millis();
   }
   if (millis() - lastSensorsRead > 10)
   {
-    Sensor_ProximityA = (int)((float)analogRead(34) / 40.95F);
-    Sensor_ProximityB = (int)((float)analogRead(35) / 40.95F);
+    Sensor_ProximityA = (int)((float)analogRead(ProximityAPin) / 40.95F);
+    Sensor_ProximityB = (int)((float)analogRead(ProximityBPin) / 40.95F);
     // Serial.print("S0 = ");
     // Serial.print(Sensors[0]);
     // Serial.print(", S1 = ");
@@ -118,7 +130,7 @@ void MechanicalLoop()
       lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
 
       if (measure.RangeStatus != 4)
-      { // phase failures have incorrect data
+      { 
         float newDistance = measure.RangeMilliMeter;
         float fac = 0.2;
         newDistance = newDistance * fac + lastDistance * (1 - fac);
@@ -127,6 +139,7 @@ void MechanicalLoop()
         // Serial.println(Sensors[2]);
       }
     }
+    // phase failures have incorrect data
     else
       Sensor_Distance = 0;
 
@@ -165,6 +178,26 @@ void SetServoB(int angle)
 {
   Serial.printf("SetServo2(%i)\n", angle);
   servo2Target = angle;
+}
+void SetServoAQuick(int angle)
+{
+  WriteServoAAngle(angle);
+  servo1Target = angle;
+  servo1Current = angle;
+}
+void SetServoBQuick(int angle)
+{
+  WriteServoBAngle(angle);
+  servo2Target = angle;
+  servo2Current = angle;
+}
+void WriteServoAAngle(int angle)
+{
+  servo1.write(angle * 2); // TF
+}
+void WriteServoBAngle(int angle)
+{
+  servo2.write(angle * 2); // TF
 }
 void SetServo1Speed(int speed)
 {

@@ -209,6 +209,7 @@ void disconnectHandler(BLEDevice central)
     // central disconnected event handler
     Serial.print("BLE Disconncted");
     Serial.println(central.address());
+    CurrentCommunicationChannel = CommunicationType::NotConnected;
 }
 
 void leftMotorIncomingHander(BLEDevice central, BLECharacteristic characteristic)

@@ -13,7 +13,6 @@ M3DGo::M3DGo(/* args */)
 
     if(pref.isKey("motorSpeed"))
         maxTravelSpeed = pref.getFloat("motorSpeed");
-    maxSpinSpeed = maxTravelSpeed / WheelSpan / 2.0;
     pref.end();
 }
 
@@ -34,7 +33,7 @@ void M3DGo::delay_s(float s){
 void M3DGo::delay(long ms){
     long st = millis();
     while(millis() - st < ms){
-        BLELoop();
+        BLE.poll();
         notification_led_loop(notLED);
         range_finder_loop();
     }
@@ -44,7 +43,7 @@ void M3DGo::ScratchLoop(){
         return;
     go_loop();
     DisplayLoop();
-    BLELoop();
+    BLE.poll();
     MechanicalLoop();
 }
 
@@ -78,6 +77,39 @@ void M3DGo::reverse(int percentage, float accelerateInSeconds){
     constraintPercentage(percentage);
     setMotors(-percentage, -percentage, accelerateInSeconds);
 }
+
+// Spin the bot by a specified angle in degrees. A positive angle spins clockwise,
+// while a negative angle spins counterclockwise.
+void M3DGo::spinAngle(float angle){   
+    float s = (WheelSpan / 2) * angle * PI / 180.0F;
+    float t = s / maxTravelSpeed;
+    if (angle > 0)
+        spinCounterClockwise();
+    else
+        spinClockwise();
+    delay(round(t * 1000));
+    stop();
+}
+
+// Move the bot in a straight line for the specified distance (in centimeters).
+// Negative distance moves the bot backward. Requires a calibrated bot.
+void M3DGo::travel_cm(float distance){
+    float t = (distance / 100.0F) / maxTravelSpeed;
+    if (distance > 0)
+        forward();
+    else
+        reverse();
+    delay(round(t * 1000));
+    stop();
+}
+
+void M3DGo::travel_mm(float distance){
+    travel_cm(distance / 10.0F);
+}
+void M3DGo::travel_inch(float distance){
+    travel_mm(distance * 25.4);
+}
+
 // Puts the bot in Clockwise spin with the specified power in percentage. (Default);
 // If a second paramter is defined, the bot will take the specified number of seconds to accelerate/decelerate
 void M3DGo::spinClockwise(int percentage, float accelerateInSeconds){
@@ -148,17 +180,6 @@ int M3DGo::getLeftMotor(){
 // Gets the current power set for the right side motor
 int M3DGo::getRightMotor(){
     return rightMotorPower;
-}
-
-// Get spin speed in rad/sec
-float M3DGo::getMaxSpinSpeed(){
-    return maxSpinSpeed;
-}
-
-// Set spin speed in rad/sec
-void M3DGo::setMaxSpinSpeed(float speed){
-    maxSpinSpeed = speed;
-    setMaxTravelSpeed(WheelSpan / 2 * speed);
 }
 
 // Get travel speed in m/sec
@@ -617,27 +638,119 @@ Remote::Remote(){
 Remote::~Remote(){
     
 }
+enum RemoteRequestID{
+    AskNumber = 0,
+    AskString,
+    Notify,
+    AskButton1,
+    AskButton2,
+    AskButton3,
+    AskButton4,
+    AskButton5,
+    NotificationSetFloatA,
+    NotificationSetFloatA2,
+    NotificationSetFloatA3,
+    NotificationSetFloatA4,    
+    NotificationSetFloatB,
+    NotificationSetFloatB2,
+    NotificationSetFloatB3,
+    NotificationSetFloatB4,    
+    NotificationSetStringA,
+    NotificationSetStringA2,
+    NotificationSetStringA3,
+    NotificationSetStringA4,    
+    NotificationSetStringB,
+    NotificationSetStringB2,
+    NotificationSetStringB3,
+    NotificationSetStringB4,
+    NotificationHide,
+    NotificationHide2,
+    NotificationHide3,
+    NotificationHide4,
+    NotificationSetPlot,
+    NotificationSetPlot2,
+    NotificationSetPlot3,
+    NotificationSetPlot4,
+    NotificationSetPolarPlot,
+    NotificationSetPolarPlot2,
+    NotificationSetPolarPlot3,
+    NotificationSetPolarPlot4,    
+    NotificationSetIndicator,
+    NotificationSetIndicator2,
+    NotificationSetIndicator3,
+    NotificationSetIndicator4,
+};
 
+void bleGetResponse(RemoteRequestID id){
+
+    BLE.poll(); // flush previous
+    aRemoteValueHasReturned = false;
+    remoteProcessNotifyRequestCharacteristic.setValue(id);
+
+    while(!aRemoteValueHasReturned){
+        BLE.poll();
+        if (CurrentCommunicationChannel != CommunicationType::BluetoothLE){
+            delay(1);
+            continue;
+        }
+    }
+}
+String& bleGetString(RemoteRequestID id){
+    bleGetResponse(id);
+    return remoteStringValueReturned;
+}
+float bleGetFloat(RemoteRequestID id){
+    bleGetResponse(id);
+    return remoteFloatValueReturned;
+}
 float Remote::askNumber(String question){
-    
+    remoteNotifyString0Characteristic.setValue(question);
+    return bleGetFloat(RemoteRequestID::AskNumber);
 }
-String Remote::askString(String question){
-    
+String Remote::askString(String question){    
+    remoteNotifyString0Characteristic.setValue(question);
+    return bleGetString(RemoteRequestID::AskString);
 }
-String Remote::waitForButton(String question, String buttonA){
-    
+void Remote::notify(String message, NotificationType type){
+    remoteNotifyString0Characteristic.setValue(message);
+    remoteNotifyFloatCharacteristic.setValue(type);
+    remoteProcessNotifyRequestCharacteristic.setValue(RemoteRequestID::Notify);
 }
-String Remote::waitForButton(String question, String buttonA, String buttonB){
-    
+String Remote::waitForButton(String question, String buttonA){    
+    remoteNotifyString0Characteristic.setValue(question);
+    remoteNotifyString1Characteristic.setValue(buttonA);
+    return bleGetString(RemoteRequestID::AskButton1);
+}
+String Remote::waitForButton(String question, String buttonA, String buttonB){  
+    remoteNotifyString0Characteristic.setValue(question);
+    remoteNotifyString1Characteristic.setValue(buttonA);
+    remoteNotifyString2Characteristic.setValue(buttonB);
+    return bleGetString(RemoteRequestID::AskButton2);
 }
 String Remote::waitForButton(String question, String buttonA, String buttonB, String buttonC){
-    
+    remoteNotifyString0Characteristic.setValue(question);
+    remoteNotifyString1Characteristic.setValue(buttonA);
+    remoteNotifyString2Characteristic.setValue(buttonB);
+    remoteNotifyString3Characteristic.setValue(buttonC);
+    return bleGetString(RemoteRequestID::AskButton3);
 }
 String Remote::waitForButton(String question, String buttonA, String buttonB, String buttonC, String buttonD){
-    
+    remoteNotifyString0Characteristic.setValue(question);
+    remoteNotifyString1Characteristic.setValue(buttonA);
+    remoteNotifyString2Characteristic.setValue(buttonB);
+    remoteNotifyString3Characteristic.setValue(buttonC);
+    remoteNotifyString4Characteristic.setValue(buttonD);
+    return bleGetString(RemoteRequestID::AskButton4);
 }
 String Remote::waitForButton(String question, String buttonA, String buttonB, String buttonC, String buttonD, String buttonE){
     
+    remoteNotifyString0Characteristic.setValue(question);
+    remoteNotifyString1Characteristic.setValue(buttonA);
+    remoteNotifyString2Characteristic.setValue(buttonB);
+    remoteNotifyString3Characteristic.setValue(buttonC);
+    remoteNotifyString4Characteristic.setValue(buttonD);
+    remoteNotifyString5Characteristic.setValue(buttonE);
+    return bleGetString(RemoteRequestID::AskButton5);
 }
 // Indication
 
@@ -649,18 +762,78 @@ Indication::Indication(int _index)
 Indication::~Indication()
 {
 }
-void Indication::hide(){
+void Indication::hide(){    
+    remoteProcessNotifyRequestCharacteristic.setValue(NotificationHide + index);
 }
 void Indication::show(String notification){
-
+    remoteNotifyString0Characteristic.setValue(notification);
+    remoteProcessNotifyRequestCharacteristic.setValue(NotificationSetStringA + index);
 }
 // Notify with the given notification and the value
 void Indication::show(String notification, float value){
-
+    remoteNotifyString0Characteristic.setValue(notification);
+    remoteProcessNotifyRequestCharacteristic.setValue(NotificationSetStringA + index);
+    remoteNotifyFloatCharacteristic.setValue(value);    
+    remoteProcessNotifyRequestCharacteristic.setValue(NotificationSetFloatA + index);
+    remoteProcessNotifyRequestCharacteristic.setValue(NotificationSetIndicator + index);
 }
 // Notify with the given notification and the value
-void Indication::show(String notification, String value){
-    
+void Indication::show(String notification, String value){    
+    remoteNotifyString0Characteristic.setValue(notification);
+    remoteProcessNotifyRequestCharacteristic.setValue(NotificationSetStringA + index);
+    remoteNotifyString1Characteristic.setValue(value);
+    remoteProcessNotifyRequestCharacteristic.setValue(NotificationSetFloatB + index);
+    remoteProcessNotifyRequestCharacteristic.setValue(NotificationSetIndicator + index);
+}
+
+// Plot a floating-point value on the remote, against time.
+void Indication::plot(float yValue){
+    remoteNotifyFloatCharacteristic.setValue(yValue);    
+    remoteProcessNotifyRequestCharacteristic.setValue(NotificationSetFloatB + index);
+    remoteProcessNotifyRequestCharacteristic.setValue(NotificationSetPlot + index);
+}
+
+// Plot a value with a title.
+void Indication::plot(String title, float yValue){
+    remoteNotifyString0Characteristic.setValue(title);
+    remoteProcessNotifyRequestCharacteristic.setValue(NotificationSetStringA + index);
+    remoteNotifyFloatCharacteristic.setValue(yValue);    
+    remoteProcessNotifyRequestCharacteristic.setValue(NotificationSetFloatB + index);
+    remoteProcessNotifyRequestCharacteristic.setValue(NotificationSetPlot + index);
+}
+
+// Plot an (x, y) pair on the remote.
+void Indication::plot(float xValue, float yValue){
+    remoteNotifyFloatCharacteristic.setValue(xValue);    
+    remoteProcessNotifyRequestCharacteristic.setValue(NotificationSetFloatA + index);
+    remoteNotifyFloatCharacteristic.setValue(yValue);    
+    remoteProcessNotifyRequestCharacteristic.setValue(NotificationSetFloatB + index);
+    remoteProcessNotifyRequestCharacteristic.setValue(NotificationSetPlot + index);
+}
+
+// Create a polar plot with a floating-point value.
+void Indication::polarPlot(float value){
+    remoteNotifyFloatCharacteristic.setValue(value);    
+    remoteProcessNotifyRequestCharacteristic.setValue(NotificationSetFloatB + index);
+    remoteProcessNotifyRequestCharacteristic.setValue(NotificationSetPolarPlot + index);
+}
+
+// Create a polar plot with a title and value.
+void Indication::polarPlot(String title, float value){    
+    remoteNotifyString0Characteristic.setValue(title);
+    remoteProcessNotifyRequestCharacteristic.setValue(NotificationSetStringA + index);
+    remoteNotifyFloatCharacteristic.setValue(value);    
+    remoteProcessNotifyRequestCharacteristic.setValue(NotificationSetFloatB + index);
+    remoteProcessNotifyRequestCharacteristic.setValue(NotificationSetPlot + index);
+}
+
+// Plot a value in polar coordinates (angle in degrees and radius).
+void Indication::polarPlot(float angle_d, float value_r){
+    remoteNotifyFloatCharacteristic.setValue(angle_d);    
+    remoteProcessNotifyRequestCharacteristic.setValue(NotificationSetFloatA + index);
+    remoteNotifyFloatCharacteristic.setValue(value_r);    
+    remoteProcessNotifyRequestCharacteristic.setValue(NotificationSetFloatB + index);
+    remoteProcessNotifyRequestCharacteristic.setValue(NotificationSetPolarPlot + index);
 }
 
 

@@ -4,7 +4,9 @@
 #include "Mechanical.h"
 #include "Display.h"
 #include "bluetooth.h"
+#include "Common.h"
 void go_setup();
 void go_loop();
 // 0 = auto, >0 = blink period, <0 = duty cycle
 void notification_led_loop(int period = 0);
+extern CommunicationType CurrentCommunicationChannel;

@@ -1,7 +1,20 @@
 #pragma once
 #include <Arduino.h>
+#include <ArduinoBLE.h>
 
 void BLESetup();
 void BLELoop();
+
+extern bool aRemoteValueHasReturned;
+extern float remoteFloatValueReturned;
+extern String remoteStringValueReturned;
+extern BLEStringCharacteristic remoteNotifyString0Characteristic;
+extern BLEStringCharacteristic remoteNotifyString1Characteristic;
+extern BLEStringCharacteristic remoteNotifyString2Characteristic;
+extern BLEStringCharacteristic remoteNotifyString3Characteristic;
+extern BLEStringCharacteristic remoteNotifyString4Characteristic;
+extern BLEStringCharacteristic remoteNotifyString5Characteristic;
+extern BLEFloatCharacteristic remoteNotifyFloatCharacteristic;
+extern BLEByteCharacteristic remoteProcessNotifyRequestCharacteristic;
 
 extern String BLEName;

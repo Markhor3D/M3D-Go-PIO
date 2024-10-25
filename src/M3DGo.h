@@ -24,7 +24,6 @@ private:
     int leftMotorPower = 0;  // Stores the current power of the left motor
     int rightMotorPower = 0; // Stores the current power of the right motor
     float maxTravelSpeed = 0; // to be restored from prefs
-    float maxSpinSpeed = 0; // to be restored from prefs
 public:
     // Constructor for M3DGo
     M3DGo(/* args */);
@@ -74,13 +73,25 @@ public:
     // while a negative angle spins counterclockwise.
     // Example usage:
     //   go.spinAngle(90);  // Rotate the bot 90 degrees clockwise
-    void spinAngle(int angle = 90);
+    void spinAngle(float angle = 90);
 
     // Move the bot in a straight line for the specified distance (in centimeters).
     // Negative distance moves the bot backward. Requires a calibrated bot.
     // Example usage:
     //   go.travel_cm(50);  // Move forward for 50 cm
-    void travel_cm(int distance = 90);
+    void travel_cm(float distance = 90);
+
+    // Move the bot in a straight line for the specified distance (in mllimeters).
+    // Negative distance moves the bot backward. Requires a calibrated bot.
+    // Example usage:
+    //   go.travel_cm(50);  // Move forward for 50 cm
+    void travel_mm(float distance = 90);
+
+    // Move the bot in a straight line for the specified distance (in inches).
+    // Negative distance moves the bot backward. Requires a calibrated bot.
+    // Example usage:
+    //   go.travel_cm(50);  // Move forward for 50 cm
+    void travel_inch(float distance = 90);
 
     // Spin the bot clockwise with the specified power [0-100%]. Optionally, set a duration
     // for acceleration in seconds.
@@ -142,12 +153,6 @@ public:
 
     // Function used for the Scratch environment loop.
     void ScratchLoop();
-    
-    // Get spin speed in rad/sec
-    float getMaxSpinSpeed();
-
-    // Set spin speed in rad/sec
-    void setMaxSpinSpeed(float speed);
     
     // Get travel speed in m/sec
     float getMaxTravelSpeed();
@@ -470,8 +475,8 @@ public:
 
     // Shows a message on the screen
     // Example usage:
-    //   remote.askString("M3D Go rocks!");
-    bool notify(String message, NotificationType type = NotificationType::Normal);
+    //   remote.notify("M3D Go rocks!");
+    void notify(String message, NotificationType type = NotificationType::Normal);
 
 
     // Create multiple Indication objects for the remote client.

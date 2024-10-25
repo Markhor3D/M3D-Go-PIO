@@ -361,6 +361,58 @@ Hinge::~Hinge()
 }
 
 
+// Get the current angle of the hinge (in degrees).
+// Example usage:
+//   float angle = hingeA.getAngle();
+float Hinge::getAngle(){
+    return currentAngle;
+}
+
+void servo_write(int index, float angleD){
+    if (index == 0){
+        WriteServoAAngle(round(angleD));
+    }
+    else if (index == 1){
+        WriteServoBAngle(round(angleD));
+    }
+}
+// Set the hinge to a specific angle (in degrees) with an optional duration.
+// Example usage:
+//   hingeA.setAngle(45, 2);  // Set hinge to 45 degrees, over 2 seconds
+void Hinge::setAngle(float angleDegrees, float openInSeconds){
+    if (angleDegrees < 0)
+        angleDegrees = 0;
+    else if (angleDegrees > 90)
+        angleDegrees = 90;
+    if (openInSeconds <= 0){
+        currentAngle = angleDegrees;        
+        servo_write(index, currentAngle);
+        return;
+    }
+    int msPerCycle = 20;
+    int cycles = round(openInSeconds * 1000.0) / 20;
+    float dTh = (angleDegrees - currentAngle) / (float)cycles;
+    while(cycles > 0){
+        currentAngle += dTh; 
+        servo_write(index, currentAngle);
+        delay(msPerCycle);
+    };
+}
+
+// Open the hinge completely. Optional time to control the duration.
+// Example usage:
+//   hingeA.open(1.5);  // Open hinge in 1.5 seconds
+void Hinge::open(float openInSeconds){
+    setAngle(90, openInSeconds);
+}
+
+// Close the hinge completely. Optional time to control the duration.
+// Example usage:
+//   hingeA.close(1);  // Close hinge in 1 second
+void Hinge::close(float closeInSeconds){
+    setAngle(0, closeInSeconds);
+}
+
 // Display
 
 Display::Display(/* args */)

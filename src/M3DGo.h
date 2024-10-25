@@ -168,11 +168,11 @@ class Hinge
 {
 private:
     int index = -1;  // Index to identify the hinge
+    float currentAngle = 0;
 public:
     // Constructor for Hinge
     Hinge(int index);
     ~Hinge();
-
     // Get the current angle of the hinge (in degrees).
     // Example usage:
     //   float angle = hingeA.getAngle();

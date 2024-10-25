@@ -13,6 +13,8 @@ void SetServoA(int angle);
 void SetServoB(int angle);
 void SetServo1Speed(int speed);
 void SetServo2Speed(int speed);
+void WriteServoAAngle(int angle);
+void WriteServoBAngle(int angle);
 
 extern float Sensor_Distance;
 extern float Sensor_ProximityA;

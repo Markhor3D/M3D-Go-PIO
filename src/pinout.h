@@ -1,6 +1,6 @@
 #pragma once
 
-#define GoVersion 2
+#define GoVersion 1
 
 #define Servo1Pin                   23
 #define Servo2Pin                   19

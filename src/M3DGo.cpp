@@ -6,6 +6,7 @@
 #define constraintPercentage(x) x = x > 100 ? 100: (x < -100 ? -100:x)
 M3DGo::M3DGo(/* args */)
 {
+    
     Preferences pref;
     pref.begin("settings");
 
@@ -30,12 +31,15 @@ void M3DGo::begin(){
 void M3DGo::delay_s(float s){
     delay(round(s * 1000));
 }
-void M3DGo::delay(long ms){
-    long st = millis();
-    while(millis() - st < ms){
+void M3DGo::loop(){
         BLE.poll();
         notification_led_loop(notLED);
         range_finder_loop();
+}
+void M3DGo::delay(long ms){
+    long st = millis();
+    while(millis() - st <= ms){
+        loop();
     }
 }
 void M3DGo::ScratchLoop(){    
@@ -154,6 +158,14 @@ void M3DGo::setMotors(int leftPercentage, int rightPercentage, float accelerateI
         accelerateInSeconds = 0;
     else if (accelerateInSeconds < 0.0001)
         accelerateInSeconds = 0;
+    if (accelerateInSeconds == 0){
+        // Set instantaneously
+        SetLeftMotor(leftPercentage / 100.0F);
+        SetRightMotor(rightPercentage / 100.0F);
+        leftMotorPower = leftPercentage;
+        rightMotorPower = rightPercentage;
+        return;
+    }
     while(true){
         // Find fraction of movement
         float f = (millis() / 1000.0F - start) / accelerateInSeconds;
@@ -512,7 +524,7 @@ RangeFinder::~RangeFinder()
 float RangeFinder::get_mm(){
     if(!attached())
         return 0;
-    return range_finder_loop();
+    return (range_finder_loop() + 100) * 6;
 }
 
 // Get the distance in meters.
@@ -523,7 +535,7 @@ float RangeFinder::get_m(){
 // Get the distance in centimeters.
 float RangeFinder::get_cm(){
 
-    return get_mm() / 100.0F;
+    return get_mm() / 10.0F;
 }
 
 // Get the distance in inches.

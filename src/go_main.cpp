@@ -23,28 +23,12 @@ bool FindDevicesOnWire(){
 void go_setup()
 {
   Serial.begin(115200);
-  Serial.println("Begin");
+  Serial.println("Go Begin");
 
-  Wire.begin(); // default pins
-  if (!FindDevicesOnWire()){    
-    Serial.print("No devices");
-    delay(1);
-    Wire.end();
-    Serial.end();
-    Wire.begin(3, 1); // Serial pins
-    if (!FindDevicesOnWire()){
-      Wire.end();
-      Wire.begin(21, 22); // Back to original pins
-      Serial.begin(115200);
-      delay(1);
-      Serial.print("Couldn't find anything with serial pins too");
-      delay(1);
-    }
-  }
-  else{
-      Serial.print("I2C devices are here.");
-  }
-  DisplaySetup();
+  
+  Wire.begin();
+  if (FindDevicesOnWire())
+    DisplaySetup();
   BLESetup();
   MechanicalSetup();
   if (weHaveOled)

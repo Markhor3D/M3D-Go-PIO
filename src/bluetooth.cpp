@@ -219,7 +219,7 @@ void BLELoop()
         if (ProximityBSent != Sensor_ProximityB || forcedSend)
             proximityBCharacteristic.setValue(floatPercentToByte(Sensor_ProximityB));
         if (DistanceSent != Sensor_Distance || forcedSend)
-            distanceCharacteristic.setValue(floatPercentToByte(Sensor_Distance));
+            distanceCharacteristic.setValue(floatPercentToByte(round(Sensor_Distance)));
         ProximityASent = Sensor_ProximityA;
         ProximityBSent = Sensor_ProximityB;
         DistanceSent = Sensor_Distance;

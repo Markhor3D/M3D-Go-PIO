@@ -48,18 +48,18 @@ void MechanicalSetup()
     // Serial.println("VL53L0X found! Proceeding with initialization...");
     if (!lox.begin())
     {
-      Serial.println(F("Failed to boot VL53L0X"));
+      //Serial.println(F("Failed to boot VL53L0X"));
       weHaveVLX = false;
     }
     else
     {
       weHaveVLX = true;
-      Serial.println(F("Found VL53L0X"));
+      //Serial.println(F("Found VL53L0X"));
     }
   }
   else
   {
-    Serial.println("VL53L0X not found or not responding!");
+    //Serial.println("VL53L0X not found or not responding!");
       weHaveVLX = false;
     // Handle the case where the sensor is not found or not responding
   }
@@ -87,13 +87,13 @@ void MechanicalLoop()
     if (servo1Current > servo1Target)
     {
       servo1Current--;
-      Serial.printf("servo 1 write: %d\n", servo1Current);
+      //Serial.printf("servo 1 write: %d\n", servo1Current);
       WriteServoAAngle(servo1Current);
     }
     else if (servo1Current < servo1Target)
     {
       servo1Current++;
-      Serial.printf("servo 1 write: %d\n", servo1Current);
+      //Serial.printf("servo 1 write: %d\n", servo1Current);
       WriteServoAAngle(servo1Current);
     }
     lastServo1Set = millis();
@@ -103,13 +103,13 @@ void MechanicalLoop()
     if (servo2Current > servo2Target)
     {
       servo2Current--;
-      Serial.printf("servo 2 write: %d\n", servo2Current);
+      //Serial.printf("servo 2 write: %d\n", servo2Current);
       WriteServoBAngle(servo2Current);
     }
     else if (servo2Current < servo2Target)
     {
       servo2Current++;
-      Serial.printf("servo 2 write: %d\n", servo2Current);
+      //Serial.printf("servo 2 write: %d\n", servo2Current);
       WriteServoBAngle(servo2Current);
     }
     lastServo2Set = millis();
@@ -120,7 +120,8 @@ void MechanicalLoop()
 }
 
 float range_finder_loop(){
-  if (millis() - lastSensorsRead > 10)
+  
+  if (millis() - lastSensorsRead > 1)
   {
     // Serial.print("S0 = ");
     // Serial.print(Sensors[0]);
@@ -136,10 +137,11 @@ float range_finder_loop(){
       if (measure.RangeStatus != 4)
       { 
         float newDistance = measure.RangeMilliMeter;
-        float fac = 0.2;
+        float fac = 0.95;
         newDistance = newDistance * fac + lastDistance * (1 - fac);
         lastDistance = newDistance;
-        Sensor_Distance = round((newDistance) / 6.00 - 100); // 0 = -100%, 1200 is 100%
+
+        Sensor_Distance = ((newDistance) / 6.00 - 100); // 0 = -100%, 1200 is 100%
         // Serial.println(Sensors[2]);
       }
     }
@@ -164,23 +166,23 @@ void SetL298Motor(L298N &motor, float factor)
 
 void SetLeftMotor(float factor)
 {
-  Serial.printf("SetLeftMotor(%f)\n", factor);
+  //Serial.printf("SetLeftMotor(%f)\n", factor);
   SetL298Motor(leftMotor, factor);
 }
 void SetRightMotor(float factor)
 {
-  Serial.printf("SetRightMotor(%f)\n", factor);
+  //Serial.printf("SetRightMotor(%f)\n", factor);
   SetL298Motor(rightMotor, -factor); // default wiring is inverted.
 }
 
 void SetServoA(int angle)
 {
-  Serial.printf("SetServo1(%i)\n", angle);
+  //Serial.printf("SetServo1(%i)\n", angle);
   servo1Target = angle;
 }
 void SetServoB(int angle)
 {
-  Serial.printf("SetServo2(%i)\n", angle);
+  //Serial.printf("SetServo2(%i)\n", angle);
   servo2Target = angle;
 }
 void SetServoAQuick(int angle)

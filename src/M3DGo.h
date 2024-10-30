@@ -34,13 +34,15 @@ public:
     //   go.begin();
     void begin();
 
+    // Run this function in the loop for status LED and other in-built automation features.
+    void loop();
     // Delays the execution of the code be the specified seconds while respecting the background tasks of M3D Go
     // Example usage:
-    //   go.delay(500); // Halts the execution for half a second
+    //   go.delay(0.5); // Halts the execution for half a second
     void delay_s(float seconds);
     // Delays the execution of the code be the specified milliseconds while respecting the background tasks of M3D Go
     // Example usage:
-    //   go.delay(0.5); // Halts the execution for half a second
+    //   go.delay(500); // Halts the execution for half a second
     void delay(long ms);
     // Set the brightness of the notification LED [0-100%]
     // Example usage:

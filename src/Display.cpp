@@ -1094,7 +1094,7 @@ void DisplaySetup()
 	// SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
 	if (!oled.begin(SSD1306_SWITCHCAPVCC, 0x3C))
 	{
-		Serial.println(F("SSD1306 allocation failed"));
+		//Serial.println(F("SSD1306 allocation failed"));
 		weHaveOled = false;
 		return;
 	}

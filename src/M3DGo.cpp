@@ -414,6 +414,7 @@ void servo_write(int index, float angleD){
 // Example usage:
 //   hingeA.setAngle(45, 2);  // Set hinge to 45 degrees, over 2 seconds
 void Hinge::setAngle(float angleDegrees, float openInSeconds){
+    angleDegrees = 90 - angleDegrees;
     if (angleDegrees < 0)
         angleDegrees = 0;
     else if (angleDegrees > 90)

@@ -24,6 +24,7 @@ private:
     int leftMotorPower = 0;  // Stores the current power of the left motor
     int rightMotorPower = 0; // Stores the current power of the right motor
     float maxTravelSpeed = 0; // to be restored from prefs
+    
 public:
     // Constructor for M3DGo
     M3DGo(/* args */);

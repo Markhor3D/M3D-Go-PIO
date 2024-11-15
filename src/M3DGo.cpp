@@ -387,6 +387,7 @@ bool M3DGo::autoCalibrateWithLineSensor(){
 
 Hinge::Hinge(int index)
 {
+    this->index = index;
 }
 
 Hinge::~Hinge()
@@ -423,12 +424,12 @@ void Hinge::setAngle(float angleDegrees, float openInSeconds){
         return;
     }
     int msPerCycle = 20;
-    int cycles = round(openInSeconds * 1000.0) / 20;
+    int cycles = round(openInSeconds * 1000.0) / msPerCycle;
     float dTh = (angleDegrees - currentAngle) / (float)cycles;
-    while(cycles > 0){
+    while(cycles-- > 0){
         currentAngle += dTh; 
         servo_write(index, currentAngle);
-        delay(msPerCycle);
+        go.delay(msPerCycle);
     };
 }
 

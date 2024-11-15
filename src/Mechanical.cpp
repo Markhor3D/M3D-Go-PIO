@@ -2,15 +2,15 @@
 #include <Arduino.h>
 #include "L298N\L298N.h"
 #include "HCSR04/HCSR04.h"
-#include <ESP32_Servo.h>
+#include "Servo2.h"
 #include <Wire.h>
 #include <Adafruit_VL53L0X.h>
 #include "Pinout.h"
 
 Adafruit_VL53L0X lox = Adafruit_VL53L0X();
 
-Servo servo1;
-Servo servo2;
+Servo2 servo1(0);
+Servo2 servo2(1);
 
 L298N leftMotor = L298N(LeftMotorEnPin, LeftMotorP1Pin, LeftMotorP2Pin); // 12,13 // eN, P1, P2
 L298N rightMotor = L298N(RightMotorEnPin, RightMotorP1Pin, RightMotorP2Pin);  // 2,4
@@ -45,21 +45,21 @@ void MechanicalSetup()
 
   if (error == 0)
   {
-    // Serial.println("VL53L0X found! Proceeding with initialization...");
+    // GoDebugln("VL53L0X found! Proceeding with initialization...");
     if (!lox.begin())
     {
-      //Serial.println(F("Failed to boot VL53L0X"));
+      //GoDebugln(F("Failed to boot VL53L0X"));
       weHaveVLX = false;
     }
     else
     {
       weHaveVLX = true;
-      //Serial.println(F("Found VL53L0X"));
+      //GoDebugln(F("Found VL53L0X"));
     }
   }
   else
   {
-    //Serial.println("VL53L0X not found or not responding!");
+    //GoDebugln("VL53L0X not found or not responding!");
       weHaveVLX = false;
     // Handle the case where the sensor is not found or not responding
   }
@@ -87,13 +87,13 @@ void MechanicalLoop()
     if (servo1Current > servo1Target)
     {
       servo1Current--;
-      //Serial.printf("servo 1 write: %d\n", servo1Current);
+      //GoDebugf("servo 1 write: %d\n", servo1Current);
       WriteServoAAngle(servo1Current);
     }
     else if (servo1Current < servo1Target)
     {
       servo1Current++;
-      //Serial.printf("servo 1 write: %d\n", servo1Current);
+      //GoDebugf("servo 1 write: %d\n", servo1Current);
       WriteServoAAngle(servo1Current);
     }
     lastServo1Set = millis();
@@ -103,13 +103,13 @@ void MechanicalLoop()
     if (servo2Current > servo2Target)
     {
       servo2Current--;
-      //Serial.printf("servo 2 write: %d\n", servo2Current);
+      //GoDebugf("servo 2 write: %d\n", servo2Current);
       WriteServoBAngle(servo2Current);
     }
     else if (servo2Current < servo2Target)
     {
       servo2Current++;
-      //Serial.printf("servo 2 write: %d\n", servo2Current);
+      //GoDebugf("servo 2 write: %d\n", servo2Current);
       WriteServoBAngle(servo2Current);
     }
     lastServo2Set = millis();
@@ -123,10 +123,10 @@ float range_finder_loop(){
   
   if (millis() - lastSensorsRead > 1)
   {
-    // Serial.print("S0 = ");
-    // Serial.print(Sensors[0]);
-    // Serial.print(", S1 = ");
-    // Serial.println(Sensors[1]);
+    // GoDebug("S0 = ");
+    // GoDebug(Sensors[0]);
+    // GoDebug(", S1 = ");
+    // GoDebugln(Sensors[1]);
 
     if (weHaveVLX)
     {
@@ -142,7 +142,7 @@ float range_finder_loop(){
         lastDistance = newDistance;
 
         Sensor_Distance = ((newDistance) / 6.00 - 100); // 0 = -100%, 1200 is 100%
-        // Serial.println(Sensors[2]);
+        // GoDebugln(Sensors[2]);
       }
     }
     // phase failures have incorrect data
@@ -166,23 +166,23 @@ void SetL298Motor(L298N &motor, float factor)
 
 void SetLeftMotor(float factor)
 {
-  //Serial.printf("SetLeftMotor(%f)\n", factor);
+  //GoDebugf("SetLeftMotor(%f)\n", factor);
   SetL298Motor(leftMotor, factor);
 }
 void SetRightMotor(float factor)
 {
-  //Serial.printf("SetRightMotor(%f)\n", factor);
+  //GoDebugf("SetRightMotor(%f)\n", factor);
   SetL298Motor(rightMotor, -factor); // default wiring is inverted.
 }
 
 void SetServoA(int angle)
 {
-  //Serial.printf("SetServo1(%i)\n", angle);
+  //GoDebugf("SetServo1(%i)\n", angle);
   servo1Target = angle;
 }
 void SetServoB(int angle)
 {
-  //Serial.printf("SetServo2(%i)\n", angle);
+  //GoDebugf("SetServo2(%i)\n", angle);
   servo2Target = angle;
 }
 void SetServoAQuick(int angle)
@@ -199,10 +199,14 @@ void SetServoBQuick(int angle)
 }
 void WriteServoAAngle(int angle)
 {
+  GoDebug("Servo A: ");
+  GoDebugln(angle);
   servo1.write(angle * 2); // TF
 }
 void WriteServoBAngle(int angle)
 {
+  GoDebug("Servo B: ");
+  GoDebugln(angle);
   servo2.write(angle * 2); // TF
 }
 void SetServo1Speed(int speed)

@@ -41,8 +41,8 @@ void go_setup()
     oled.print(BLEName);
     oled.display();
   }
-  ledcAttachPin(StatusLEDPin, 1);
-  ledcChangeFrequency(1, 1000, 8);
+  ledcAttachPin(StatusLEDPin, 10);
+  ledcChangeFrequency(10, 1000, 8);
   // WebSocketsSetup();
   // NetworkSetup();
 }
@@ -56,7 +56,7 @@ void StatusLEDBlinker(long period)
   lastLED = millis();
   int v = 255 - abs((((long)millis() % period) * 510) / period - 255); // 0 > 255 > 0
   //analogWrite(18, v);
-  ledcWrite(1, v);
+  ledcWrite(10, v);
 }
 void notification_led_loop(int period){    
   if (period == 0) // scratch mode
@@ -70,7 +70,7 @@ void notification_led_loop(int period){
       StatusLEDBlinker(period);
   }
   else { // -ive is duty cycle
-    ledcWrite(1, -period);
+    ledcWrite(10, -period);
   }
 }
 void go_loop(){

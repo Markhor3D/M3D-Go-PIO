@@ -1,6 +1,6 @@
 #pragma once
 
-#define GoVersion 1
+#define GoVersion 2
 
 #define Servo1Pin                   23
 #define Servo2Pin                   19
@@ -29,4 +29,13 @@
 #define RightMotorP2Pin     15
 #define BatteryLevelPin     36
 #define StatusLEDPin        18
+#endif
+
+#define ShowDebug true
+#if ShowDebug
+    #define GoDebug(x) Serial.print(x);
+    #define GoDebugln(x) Serial.println(x);
+#else
+    #define GoDebug(x) ;
+    #define GoDebugln(x) ;
 #endif

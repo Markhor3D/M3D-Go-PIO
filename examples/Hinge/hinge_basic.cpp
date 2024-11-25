@@ -16,7 +16,7 @@
  * - Opens the hinge to 90 degrees, displays the current angle, then closes it back to 0 degrees.
  */
 
-#include <M3D-Go.h>
+#include <M3DGo.h>
 
 void setup() {
     go.begin();      // Initialize M3D-Go hardware

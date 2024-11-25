@@ -15,7 +15,7 @@
  * - Provides buttons on the remote for basic movement control, allowing users to control the bot’s motion.
  */
 
-#include <M3D-Go.h>
+#include <M3DGo.h>
 
 void setup() {
     go.begin();  // Initialize M3D-Go hardware

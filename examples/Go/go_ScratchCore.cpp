@@ -21,7 +21,7 @@
  * - Initializes the M3D-Go hardware and starts the Scratch interface loop.
  */
 
-#include <M3D-Go.h>
+#include <M3DGo.h>
 
 void setup() {
     // Initialize M3D-Go hardware and Scratch core

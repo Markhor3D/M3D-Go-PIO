@@ -20,7 +20,7 @@
  * - Moves the bot forward and backward, then spins clockwise and counterclockwise.
  */
 
-#include <M3D-Go.h>
+#include <M3DGo.h>
 
 void setup() {
     // Initialize M3D-Go hardware and Scratch core

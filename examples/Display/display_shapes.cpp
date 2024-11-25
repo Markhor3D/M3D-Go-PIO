@@ -17,7 +17,7 @@
  * - Draws a rectangle, circle, and line on the OLED screen.
  */
 
-#include <M3D-Go.h>
+#include <M3DGo.h>
 
 void setup() {
     go.begin();  // Initialize M3D-Go hardware

@@ -15,7 +15,7 @@
  * - Shows different types of notifications on the remote client to demonstrate the visual effects for each type.
  */
 
-#include <M3D-Go.h>
+#include <M3DGo.h>
 
 void setup() {
     go.begin();  // Initialize M3D-Go hardware

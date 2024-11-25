@@ -186,8 +186,8 @@ void Servo2::writeMicroseconds(int value)
         value = usToTicks(value);  // convert to ticks
         this->ticks = value;
         // do the actual write
-        Serial.print("Channel: ");
-        Serial.println(this->servoChannel);
+        //Serial.print("Channel: ");
+        //Serial.println(this->servoChannel);
         ledcWrite(this->servoChannel, this->ticks);
     }
 }

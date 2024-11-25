@@ -20,7 +20,7 @@
  * - Displays "Hello, world!" on the OLED screen.
  */
 
-#include <M3D-Go.h>
+#include <M3DGo.h>
 
 void setup() {
     // Initialize M3D-Go hardware and Scratch core

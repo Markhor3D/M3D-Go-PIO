@@ -20,7 +20,7 @@
  * - Demonstrates turning by setting different power levels for left and right motors.
  */
 
-#include <M3D-Go.h>
+#include <M3DGo.h>
 
 void setup() {
     // Initialize M3D-Go hardware and Scratch core

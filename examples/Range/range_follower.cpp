@@ -15,7 +15,7 @@
  * - Measures distance to an object and adjusts movement to maintain 50mm from the object.
  */
 
-#include <M3D-Go.h>
+#include <M3DGo.h>
 
 const float targetDistance = 50.0;  // Desired distance from the object in mm
 const float tolerance = 5.0;        // Tolerance for distance adjustment in mm

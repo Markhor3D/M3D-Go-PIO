@@ -11,6 +11,7 @@ BLEService m3dScratchLinkService("8e088cd2-8000-11ee-b9d1-0242ac120002");
 BLEByteCharacteristic proximityACharacteristic("8e088cd2-7001-11ee-b9d1-0242ac120002", BLERead | BLENotify);
 BLEByteCharacteristic proximityBCharacteristic("8e088cd2-7002-11ee-b9d1-0242ac120002", BLERead | BLENotify);
 BLEByteCharacteristic distanceCharacteristic("8e088cd2-7003-11ee-b9d1-0242ac120002", BLERead | BLENotify);
+
 BLEByteCharacteristic leftMotorCharacteristic("8e088cd2-6001-11ee-b9d1-0242ac120002", BLEWriteWithoutResponse);
 BLEByteCharacteristic rightMotorCharacteristic("8e088cd2-6002-11ee-b9d1-0242ac120002", BLEWriteWithoutResponse);
 BLEByteCharacteristic servoAAngleCharacteristic("8e088cd2-6003-11ee-b9d1-0242ac120002", BLEWriteWithoutResponse);

@@ -16,7 +16,7 @@
  * - Prompts the user for a float value and displays it on the OLED screen.
  */
 
-#include <M3D-Go.h>
+#include <M3DGo.h>
 
 void setup() {
     go.begin();  // Initialize M3D-Go hardware

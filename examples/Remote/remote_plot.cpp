@@ -15,7 +15,7 @@
  * - Measures distance to an object and displays it as a live plot on the remote client.
  */
 
-#include <M3D-Go.h>
+#include <M3DGo.h>
 
 void setup() {
     go.begin();  // Initialize M3D-Go hardware

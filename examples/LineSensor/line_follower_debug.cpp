@@ -17,7 +17,7 @@
  *   and "No Line Detected" if no line is detected.
  */
 
-#include <M3D-Go.h>
+#include <M3DGo.h>
 
 void setup() {
     go.begin();  // Initialize M3D-Go hardware

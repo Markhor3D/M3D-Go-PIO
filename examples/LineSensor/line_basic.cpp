@@ -15,7 +15,7 @@
  * - Displays "On the Line", "Left of Line", "Right of Line", or "Off the Line" based on the sensor readings.
  */
 
-#include <M3D-Go.h>
+#include <M3DGo.h>
 
 void setup() {
     go.begin();  // Initialize M3D-Go hardware

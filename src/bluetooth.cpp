@@ -113,7 +113,6 @@ void BLESetup()
     BLE.setLocalName(BLEName.c_str());
     // set the UUID for the service this peripheral advertises:
     BLE.setAdvertisedService(m3dScratchLinkService);
-    BLE.setAdvertisedService(pioRemoteLinkService);
 
     // add the characteristics to the service:
     m3dScratchLinkService.addCharacteristic(proximityACharacteristic);

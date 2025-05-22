@@ -35,8 +35,8 @@ void MechanicalSetup()
   SetServoAQuick(0);
   SetServoBQuick(0);
   #else
-  SetServoAQuick(90);
-  SetServoBQuick(90);
+  SetServoAQuick(0);
+  SetServoBQuick(0);
   #endif
 
   Wire.begin();
@@ -201,13 +201,13 @@ void WriteServoAAngle(int angle)
 {
   GoDebug("Servo A: ");
   GoDebugln(angle);
-  servo1.write(angle * 2); // TF
+  servo1.write((90 - angle) * 2); // TF
 }
 void WriteServoBAngle(int angle)
 {
   GoDebug("Servo B: ");
   GoDebugln(angle);
-  servo2.write(angle * 2); // TF
+  servo2.write((90 - angle) * 2); // TF
 }
 void SetServo1Speed(int speed)
 {

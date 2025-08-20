@@ -383,6 +383,61 @@ bool M3DGo::autoCalibrateWithLineSensor(){
     return true;
 }
 
+
+float batteryVoltage = 8.0F; // base starting voltage
+float batteryPercentage = 0;
+bool _isCharging = false;
+int lastIndex = -1;
+float lastChangeAt = 0;
+int batteryCheckLoop(){
+		
+	float f = 0.1;
+	float m =  0.97129166F;
+	float c = 0.7478963F;
+	float rawVoltage = analogRead(BatteryLevelPin) / 4095.0F * 3.3F * 12.2F / 2.2F * m + c;
+	batteryVoltage = batteryVoltage * (1 - f) + rawVoltage * f;
+	
+	//float voltage = analogRead(BatteryLevelPin)  * (7.83 / 4.13F) /* Calib */ / 1023.0F /* analog read res */ * (10.0F / (2.2F + 10.0F)) /* Pot ratio*/ * 3.3F /* Vref */;
+	float fraction = (batteryVoltage - 7.4F) / (8.45F - 7.4F);
+	batteryPercentage = fraction * 100;
+	if (batteryPercentage > 100) batteryPercentage = 100;
+	if (batteryPercentage <= 0) batteryPercentage = 0;
+	_isCharging = fraction > 1;
+
+	int index = round(fraction * 5);
+	if (index < 0)
+		index = 0;
+	else if (index >= 6)
+		index = 5;
+	
+	bool applyChange = false;
+	if (lastIndex != index){ // we are about to switch. See if the change is significant
+		if (abs(batteryVoltage - lastChangeAt) > 0.1) {// significant change from last update
+			lastIndex = index;
+			lastChangeAt = batteryVoltage;		
+			applyChange = true;		
+		}
+	}
+	return applyChange?index:lastIndex;
+}
+// Gets Battery Voltage
+float M3DGo::getBatteryVoltage(){
+    batteryCheckLoop();
+    return batteryVoltage;
+}
+
+// Gets Battery Percentage based on voltage level
+float M3DGo::getBatteryPercentage(){
+    batteryCheckLoop();
+    return batteryPercentage;
+}
+
+// checks on battery voltage if the charger is connected
+bool M3DGo::isCharging(){
+    batteryCheckLoop();
+    return _isCharging;
+}
+
 // Hinge
 
 Hinge::Hinge(int index)

@@ -1123,6 +1123,7 @@ void DisplayLoop()
 		}
 	}
 }
+extern int batteryCheckLoop();
 void SetExpression(String &label)
 {
 	if (!weHaveOled)
@@ -1150,15 +1151,8 @@ void SetExpression(String &label)
 		oled.drawBitmap(0, 0, epd_bitmap_wink, 128, 64, 1);
 	else if (label == "battery")
 	{
+		int index = batteryCheckLoop();
 		showingBatteryLevel = true;
-		float voltage = analogRead(BatteryLevelPin)  * (7.83 / 4.13F) /* Calib */ / 1023.0F /* analog read res */ * (10.0F / (2.2F + 10.0F)) /* Pot ratio*/ * 3.3F /* Vref */;
-		float fraction = (voltage - 7.4F) / (8.2F - 7.4F);
-		int index = round(fraction * 5);
-		if (index < 0)
-			index = 0;
-		else if (index >= 6)
-			index = 5;
-		
 		const unsigned char* bl_icon = battery_level_icons[index];
 		oled.drawBitmap(0, 0, bl_icon, 128, 64, 1);
 	}

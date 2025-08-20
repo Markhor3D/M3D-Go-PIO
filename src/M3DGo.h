@@ -163,6 +163,14 @@ public:
     // Set travel speed in m/sec
     void setMaxTravelSpeed(float speed);
 
+    // Gets Battery Voltage. Might have to call >20 times to get a stable reading
+    float getBatteryVoltage();
+
+    // Gets Battery Percentage based on voltage level. Might have to call >20 times to get a stable reading
+    float getBatteryPercentage();
+
+    // checks on battery voltage if the charger is connected. Might have to call >20 times to get a stable reading
+    bool isCharging();
 
     // Destructor for M3DGo.
     ~M3DGo();
